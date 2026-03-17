@@ -4,12 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#22c55e',
+        primary: '#1E3A8A',    // Deep Blue - conveys reliability and trust
+        secondary: '#FFFFFF',  // White - clean, simple, easy to read
+        accent: '#10B981',      // Emerald Green - adds freshness and growth
         dark: '#f3f4f6',
-        secondary: '#ffffff',
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
       },
     },

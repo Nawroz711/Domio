@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const AUTH_STORAGE_KEY = 'digipay_auth'
+const AUTH_STORAGE_KEY = 'domio_auth'
 
 const loadAuth = () => {
   try {
