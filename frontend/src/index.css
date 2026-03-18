@@ -6,7 +6,7 @@
 body {
   font-family: "Inter", sans-serif;
   background-color: #ffffff;
-  color: #1f2937;
+  color: #1E3A8A;
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
@@ -15,15 +15,7 @@ body {
 /* Light theme overrides */
 .light-theme {
   background-color: #ffffff;
-  color: #1f2937;
-}
-
-.logo {
-  font-family: "Poppins", sans-serif;
-  font-size: 30px;
-  font-style: italic;
-  color: #22c55e;
-  letter-spacing: -1px;
+  color: #1E3A8A;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -37,16 +29,16 @@ body {
 
 .toastify-custom {
   background: #ffffff !important;
-  color: #1f2937 !important;
+  color: #1E3A8A !important;
   border: 1px solid #e5e7eb;
   border-radius: 10px !important;
   font-family: "Inter", sans-serif;
 }
 
 .toastify-progress-custom {
-  background: #22c55e !important;
+  background: #1E3A8A !important;
 }
 
 .Toastify__toast-icon svg {
-  fill: #22c55e;
+  fill: #1E3A8A;
 }

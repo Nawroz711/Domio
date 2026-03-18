@@ -8,9 +8,11 @@ const axiosClient = axios.create({
   },
 })
 
+const AUTH_STORAGE_KEY = 'domio_auth'
+
 axiosClient.interceptors.request.use((config) => {
   try {
-    const raw = localStorage.getItem('digipay_auth')
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
       if (parsed?.token) {
