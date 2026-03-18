@@ -36,24 +36,15 @@ export const createUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
-    const accountNumber = await getUniqueAccountNumber((value) => User.exists({ accountNumber: value }))
 
-    const user = await User.create({
+    await User.create({
       name,
       email: normalizedEmail,
       password: hashedPassword,
       phone: phone.trim(),
-      accountNumber,
     })
 
-    // Create wallet for the user with default balance of 0
-    await Wallet.create({
-      userId: user._id,
-      balance: 0,
-      currency: 'USD',
-    })
-
-    return res.status(201).json({ message: 'User created successfully' })
+    return res.status(201).json({ message: 'Account created successfully, we will send email when you account has been approved!' })
   } catch (error) {
     return res.status(500).json({ message: 'Failed to create user', error: error.message })
   }
@@ -71,7 +62,11 @@ export const signInUser = async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 8 characters' })
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password')
+    const user = await User.findOne({ email: email.toLowerCase() }).select('password isActive')
+
+    if (!user.isActive) {
+      return res.status(401).json({ message: 'Your account is not activited!' })
+    }
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' })
@@ -97,8 +92,6 @@ export const signInUser = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        accountNumber: user.accountNumber,
-        verified: user.verified,
       },
     })
   } catch (error) {
@@ -121,7 +114,7 @@ export const getMyProfile = async (req, res) => {
 
 export const updateMyProfile = async (req, res) => {
   try {
-    const { name, phone } = req.body
+    const { name, phone, address } = req.body
 
     const user = await User.findById(req.userId)
     if (!user) {

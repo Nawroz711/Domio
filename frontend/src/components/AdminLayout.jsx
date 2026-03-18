@@ -10,7 +10,8 @@ import {
   Settings,
   ChevronDown,
   ChevronRight,
-  LogOut
+  LogOut,
+  BellIcon
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 
@@ -21,9 +22,9 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Agents',
-    path: '/admin/agents',
-    icon: Users,
+    title: 'Requests',
+    path: '/admin/requests',
+    icon: BellIcon,
   },
   {
     title: 'Properties',
@@ -164,7 +165,8 @@ export default function AdminLayout() {
         {/* User Section */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+              <Link to={'/profile'}>
+            <div className="flex items-center gap-3 cursor-pointer">
               <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-light">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
@@ -177,6 +179,7 @@ export default function AdminLayout() {
                 </p>
               </div>
             </div>
+              </Link>
 
             <button
               onClick={handleLogout}

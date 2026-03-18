@@ -7,7 +7,7 @@ import {
   updateMyProfile,
 } from '../controllers/user.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
-import { createUserValidation, signInValidation } from '../middlewares/user.validation.js'
+import { createUserValidation, signInValidation } from '../validations/user.validation.js'
 import { authLimiter } from '../middlewares/rateLimiter.js'
 
 const router = Router()
