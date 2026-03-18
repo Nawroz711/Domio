@@ -65,10 +65,43 @@ export function useAuth(mode) {
     }
   }
 
+    const signUp = async (event) => {
+    event.preventDefault()
+    const validationError = validate()
+
+    if (validationError) {
+      toast.error(validationError)
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await axiosClient.post('/users/signup', formData)
+
+      if(response.status === 201)
+      {
+        toast.success(response?.data?.message)
+        return;
+      }
+
+      if (!token || !user) {
+        throw new Error('Invalid sign-up response')
+      }
+
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Unable to sign up. Please try again.'
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return {
     formData,
     isSubmitting,
     handleChange,
     handleSubmit,
+    signUp
   }
 }

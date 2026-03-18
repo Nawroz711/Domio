@@ -16,13 +16,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
     },
-    accountNumber: {
-      type: String,
-      required: true,
-      unique: true,
-      immutable: true,
-      match: /^\d{12}$/,
-    },
     password: {
       type: String,
       required: true,
@@ -34,26 +27,20 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
-    pendingPhone: {
-      type: String,
-      trim: true,
-      default: '',
-    },
-    phoneOtp: {
-      type: String,
-      select: false,
-    },
-    phoneOtpExpires: {
-      type: Date,
-    },
     isActive: {
-      type: Boolean,
-      default: true,
-    },
-    verified: {
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      Enumerator: ['super admin' , 'agent'],
+      default: 'agent',
+    },
+    address: {
+      type: String,
+      trim: true,
+      required: false
+    }
   },
   {
     timestamps: true,

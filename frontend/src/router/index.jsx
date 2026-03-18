@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import SignIn from '../pages/Auth/SignIn'
+import SignUp from '../pages/Auth/SignUp'
 import NotFound from '../pages/Common/NotFound'
 import { useAuthStore } from '../store/authStore'
 import AdminLayout from '../components/AdminLayout'
@@ -8,13 +9,14 @@ import HomePage from '../pages/website/Home'
 import PropertiesPage from '../pages/website/Properties'
 import AboutPage from '../pages/website/About'
 import ContactPage from '../pages/website/Contact'
+import Profile from '../pages/Auth/Profile'
 
 function ProtectedRoute() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/signin" replace />
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />
+  }
 
   return <Outlet />
 }
@@ -37,10 +39,10 @@ const DashboardPage = () => (
   </div>
 )
 
-const AgentsPage = () => (
+const RequestsPage = () => (
   <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">Agents</h1>
-    <p className="text-gray-600 mt-2">Manage agents here</p>
+    <h1 className="text-2xl font-bold text-gray-800">Requests</h1>
+    <p className="text-gray-600 mt-2">Manage requests here</p>
   </div>
 )
 
@@ -75,6 +77,13 @@ const UsersPage = () => (
 const SettingsPage = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
+    <p className="text-gray-600 mt-2">Manage settings here</p>
+  </div>
+)
+
+const ProfilePage = () => (
+  <div className="p-8">
+    <h1 className="text-2xl font-bold text-gray-800">profile</h1>
     <p className="text-gray-600 mt-2">Manage settings here</p>
   </div>
 )
@@ -123,6 +132,10 @@ export const router = createBrowserRouter([
         path: '/signin',
         element: <SignIn />,
       },
+      {
+        path: '/signup',
+        element: <SignUp />,
+      },
     ],
   },
 
@@ -138,8 +151,8 @@ export const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: '/admin/agents',
-            element: <AgentsPage />,
+            path: '/admin/requests',
+            element: <RequestsPage />,
           },
           {
             path: '/admin/properties',
@@ -164,6 +177,10 @@ export const router = createBrowserRouter([
           {
             path: '/admin/settings',
             element: <SettingsPage />,
+          },
+          {
+            path: '/profile',
+            element: <Profile />,
           },
         ],
       },
