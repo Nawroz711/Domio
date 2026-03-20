@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: false
+    },
+    avatar: {
+      type: String,
+      trim: true,
+      default: '',
     }
   },
   {
