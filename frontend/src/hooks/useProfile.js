@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { toast } from 'react-toastify'
 import axiosClient from '../lib/axiosClient'
 import { useAuthStore } from '../store/authStore'
@@ -11,14 +11,15 @@ export function useProfile() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    address: '',
   })
   const [confirmName, setConfirmName] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [isVerifying, setIsVerifying] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [showOtpModal, setShowOtpModal] = useState(false)
-  const [otp, setOtp] = useState('')
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -30,7 +31,14 @@ export function useProfile() {
           setFormData({
             name: profile.name || '',
             phone: profile.phone || '',
+            address: profile.address || '',
           })
+          // Set avatar preview if exists
+          if (profile.avatar) {
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+            const avatarUrl = profile.avatar.startsWith('http') ? profile.avatar : `${baseURL}${profile.avatar}`
+            setAvatarPreview(avatarUrl)
+          }
         }
       } catch (error) {
         toast.error(error?.response?.data?.message || 'Failed to load profile')
@@ -71,6 +79,7 @@ export function useProfile() {
       const response = await axiosClient.put('/users/profile', {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
+        address: formData.address.trim(),
       })
       const updated = response?.data?.data
       if (updated) {
@@ -78,41 +87,18 @@ export function useProfile() {
       }
       toast.success(response?.data?.message || 'Profile updated successfully')
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to update profile')
+      const errorData = error?.response?.data
+      // Check if there are validation errors (array of errors)
+      if (errorData?.errors && Array.isArray(errorData.errors)) {
+        // Display all validation errors
+        errorData.errors.forEach((err) => {
+          toast.error(err.message)
+        })
+      } else {
+        toast.error(errorData?.message || 'Failed to update profile')
+      }
     } finally {
       setIsSaving(false)
-    }
-  }
-
-  const handleVerifyPhone = async () => {
-    if (!formData.phone.trim()) {
-      toast.error('Add a phone number before verification')
-      return
-    }
-
-    if (formData.phone.trim().length < 7 || formData.phone.trim().length > 20) {
-      toast.error('Phone number length is invalid')
-      return
-    }
-
-    setIsVerifying(true)
-    try {
-      // First save the phone number to profile
-      await axiosClient.put('/users/profile', {
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-      })
-
-      // Then send OTP
-      const response = await axiosClient.post('/users/profile/send-otp', {
-        phone: formData.phone.trim(),
-      })
-      toast.success(response?.data?.message || 'Verification code sent to your phone')
-      setShowOtpModal(true)
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to send verification code')
-    } finally {
-      setIsVerifying(false)
     }
   }
 
@@ -137,39 +123,74 @@ export function useProfile() {
     }
   }
 
-  const handleVerifyOTP = async () => {
-    if (!otp.trim()) {
-      toast.error('Enter the verification code')
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!validTypes.includes(file.type)) {
+      toast.error('Only image files are allowed (jpeg, jpg, png, gif, webp)')
       return
     }
 
-    if (!/^\d{6}$/.test(otp.trim())) {
-      toast.error('Verification code must be 6 digits')
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB')
       return
     }
 
-    setIsVerifying(true)
+    // Create local preview
+    const previewUrl = URL.createObjectURL(file)
+    setAvatarPreview(previewUrl)
+
+    setIsUploadingAvatar(true)
     try {
-      const response = await axiosClient.post('/users/profile/verify-otp', {
-        otp: otp.trim(),
+      const formData = new FormData()
+      formData.append('avatar', file)
+
+      const response = await axiosClient.post('/users/avatar', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
+
       const updated = response?.data?.data
       if (updated) {
         setUser(updated)
+        // Update the preview with the server URL
+        if (updated.avatar) {
+          const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+          const avatarUrl = updated.avatar.startsWith('http') ? updated.avatar : `${baseURL}${updated.avatar}`
+          setAvatarPreview(avatarUrl)
+        }
       }
-      toast.success(response?.data?.message || 'Phone verified successfully')
-      setShowOtpModal(false)
-      setOtp('')
+      toast.success(response?.data?.message || 'Avatar uploaded successfully')
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Invalid or expired verification code')
+      // Revert preview on error
+      if (user?.avatar) {
+        const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+        const avatarUrl = user.avatar.startsWith('http') ? user.avatar : `${baseURL}${user.avatar}`
+        setAvatarPreview(avatarUrl)
+      } else {
+        setAvatarPreview(null)
+      }
+      const errorData = error?.response?.data
+      if (errorData?.errors && Array.isArray(errorData.errors)) {
+        errorData.errors.forEach((err) => {
+          toast.error(err.message)
+        })
+      } else {
+        toast.error(errorData?.message || 'Failed to upload avatar')
+      }
     } finally {
-      setIsVerifying(false)
+      setIsUploadingAvatar(false)
     }
   }
 
-  const handleCloseOtpModal = () => {
-    setShowOtpModal(false)
-    setOtp('')
+  const triggerFileInput = () => {
+    fileInputRef.current?.click()
   }
 
   return {
@@ -178,17 +199,15 @@ export function useProfile() {
     confirmName,
     isLoading,
     isSaving,
-    isVerifying,
     isDeleting,
+    avatarPreview,
+    isUploadingAvatar,
+    fileInputRef,
     handleChange,
     handleSubmit,
     setConfirmName,
-    handleVerifyPhone,
     handleDeleteAccount,
-    showOtpModal,
-    otp,
-    setOtp,
-    handleVerifyOTP,
-    handleCloseOtpModal,
+    handleAvatarChange,
+    triggerFileInput,
   }
 }

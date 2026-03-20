@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import path from 'path'
+import fs from 'fs'
 import User from '../models/user.model.js'
 
 const SALT_ROUNDS = 12
@@ -92,6 +94,8 @@ export const signInUser = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        address: user.address,
+        avatar: user.avatar,
       },
     })
   } catch (error) {
@@ -121,23 +125,10 @@ export const updateMyProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    if (typeof name === 'string') {
-      const trimmedName = name.trim()
-      if (trimmedName.length < 2 || trimmedName.length > 50) {
-        return res.status(400).json({ message: 'Name must be between 2 and 50 characters' })
-      }
-      user.name = trimmedName
-    }
-
-    if (typeof phone !== 'string' || !phone.trim()) {
-      return res.status(400).json({ message: 'Phone is required' })
-    }
-
-    const trimmedPhone = phone.trim()
-    if (trimmedPhone.length < 7 || trimmedPhone.length > 20) {
-      return res.status(400).json({ message: 'Phone number length is invalid' })
-    }
-    user.phone = trimmedPhone
+    // Only update fields that are provided
+    if (name !== undefined) user.name = name.trim()
+    if (phone !== undefined) user.phone = phone.trim()
+    if (address !== undefined) user.address = address.trim()
 
     await user.save()
     const safeUser = await User.findById(user._id).select('-password')
@@ -151,6 +142,41 @@ export const updateMyProfile = async (req, res) => {
   }
 }
 
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
+
+    const user = await User.findById(req.userId)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Delete old avatar if exists and is not a default image
+    if (user.avatar && user.avatar.startsWith('/uploads/')) {
+      const oldAvatarPath = path.join(process.cwd(), user.avatar)
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath)
+      }
+    }
+
+    // Save the file path
+    const avatarPath = `/uploads/${req.file.filename}`
+    user.avatar = avatarPath
+    await user.save()
+
+    const safeUser = await User.findById(user._id).select('-password')
+
+    return res.status(200).json({
+      message: 'Avatar uploaded successfully',
+      data: safeUser,
+    })
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to upload avatar', error: error.message })
+  }
+}
 
 export const deleteMyAccount = async (req, res) => {
   try {

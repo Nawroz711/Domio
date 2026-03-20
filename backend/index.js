@@ -3,6 +3,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import connectDB from './src/config/mongodb.js'
 import { globalLimiter } from './src/middlewares/rateLimiter.js'
 import userRoutes from './src/routes/user.routes.js'
@@ -20,6 +22,12 @@ app.use(
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// Serve uploaded files
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
 app.use(globalLimiter)
 
 app.get('/', (_req, res) => {

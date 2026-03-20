@@ -9,6 +9,12 @@ const initialForms = {
     email: '',
     password: '',
   },
+  signup: {
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+  },
 }
 
 export function useAuth(mode) {
@@ -24,14 +30,30 @@ export function useAuth(mode) {
   }
 
   const validate = () => {
-    if (!formData.email?.trim() || !formData.password?.trim()) {
-      return 'Email and password are required.'
+    if (mode === 'signin') {
+      if (!formData.email?.trim() || !formData.password?.trim()) {
+        return 'Email and password are required.'
+      }
+      if (formData.password.length < 8) {
+        return 'Password must be at least 8 characters.'
+      }
+    } else if (mode === 'signup') {
+      if (!formData.name?.trim()) {
+        return 'Name is required.'
+      }
+      if (!formData.email?.trim()) {
+        return 'Email is required.'
+      }
+      if (!formData.phone?.trim()) {
+        return 'Phone is required.'
+      }
+      if (!formData.password?.trim()) {
+        return 'Password is required.'
+      }
+      if (formData.password.length < 8) {
+        return 'Password must be at least 8 characters.'
+      }
     }
-
-    if (formData.password.length < 8) {
-      return 'Password must be at least 8 characters.'
-    }
-
     return ''
   }
 
@@ -65,7 +87,7 @@ export function useAuth(mode) {
     }
   }
 
-    const signUp = async (event) => {
+  const signUp = async (event) => {
     event.preventDefault()
     const validationError = validate()
 
@@ -79,19 +101,22 @@ export function useAuth(mode) {
     try {
       const response = await axiosClient.post('/users/signup', formData)
 
-      if(response.status === 201)
-      {
+      if (response.status === 201) {
         toast.success(response?.data?.message)
-        return;
+        // Redirect to signin after successful signup
+        navigate('/signin')
       }
-
-      if (!token || !user) {
-        throw new Error('Invalid sign-up response')
-      }
-
     } catch (error) {
-      const message = error?.response?.data?.message || 'Unable to sign up. Please try again.'
-      toast.error(message)
+      const errorData = error?.response?.data
+      // Check if there are validation errors (array of errors)
+      if (errorData?.errors && Array.isArray(errorData.errors)) {
+        // Display all validation errors
+        errorData.errors.forEach((err) => {
+          toast.error(err.message)
+        })
+      } else {
+        toast.error(errorData?.message || 'Unable to sign up. Please try again.')
+      }
     } finally {
       setIsSubmitting(false)
     }

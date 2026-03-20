@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -14,6 +14,7 @@ import {
   BellIcon
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
+import axiosClient from '../lib/axiosClient'
 
 const menuItems = [
   {
@@ -61,10 +62,34 @@ const menuItems = [
 
 export default function AdminLayout() {
   const [expandedMenus, setExpandedMenus] = useState(['Properties'])
+  const [profileLoaded, setProfileLoaded] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
   const user = useAuthStore((state) => state.user)
+  const setUser = useAuthStore((state) => state.setUser)
+
+  // Fetch full profile once on mount if user exists but may have incomplete data
+  useEffect(() => {
+    if (user && !profileLoaded) {
+      setProfileLoaded(true)
+      axiosClient.get('/users/profile')
+        .then(res => {
+          if (res?.data?.data) {
+            setUser(res.data.data)
+          }
+        })
+        .catch(console.error)
+    }
+  }, [user, profileLoaded, setUser])
+
+  // Helper to get full avatar URL
+  const getAvatarUrl = (avatar) => {
+    if (!avatar) return null
+    if (avatar.startsWith('http')) return avatar
+    const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+    return `${baseURL}${avatar}`
+  }
 
   const toggleMenu = (title) => {
     setExpandedMenus((prev) =>
@@ -91,7 +116,7 @@ export default function AdminLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+      <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
         {/* Header */}
         <div className="h-16 flex items-center px-4 border-b border-gray-200">
           <img src="/logo.webp" alt="Domio" className="w-24 rounded-lg" />
@@ -167,8 +192,12 @@ export default function AdminLayout() {
           <div className="flex items-center justify-between">
               <Link to={'/profile'}>
             <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-light">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
+              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-light overflow-hidden">
+                {user?.avatar ? (
+                  <img src={getAvatarUrl(user.avatar)} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0).toUpperCase() || 'U'
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-light text-gray-800 truncate">
@@ -193,7 +222,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto bg-white">
         <Outlet />
       </main>
     </div>
