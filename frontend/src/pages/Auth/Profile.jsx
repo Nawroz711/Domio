@@ -25,7 +25,7 @@ export default function Profile() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold text-primary">My Profile</h1>
-            <p className="mt-1 text-sm text-gray-700">Manage your profile information.</p>
+            <p className="mt-1 text-sm text-gray-700">Manage your profile information</p>
           </div>
         </div>
 
