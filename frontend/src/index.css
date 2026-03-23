@@ -42,3 +42,11 @@ body {
 .Toastify__toast-icon svg {
   fill: #1E3A8A;
 }
+
+.header-title {
+  @apply text-2xl !font-bold
+}
+
+.sub-header-title {
+  @apply text-sm font-light text-gray-500
+}

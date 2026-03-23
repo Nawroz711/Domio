@@ -6,6 +6,7 @@ import {
   signInUser,
   updateMyProfile,
   uploadAvatar,
+  users,
 } from '../controllers/user.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import { createUserValidation, signInValidation, updateProfileValidation } from '../validations/user.validation.js'
@@ -26,5 +27,8 @@ router.post('/avatar', authMiddleware, upload.single('avatar'), (req, res, next)
   next()
 }, uploadAvatar)
 router.delete('/profile', authMiddleware, deleteMyAccount)
+
+// User management section routes
+router.get('/' , authLimiter, users)
 
 export default router

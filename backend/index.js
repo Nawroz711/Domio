@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: '*',
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization' , 'x-user-id'],
   })
 )
 
@@ -34,6 +34,7 @@ app.get('/', (_req, res) => {
   res.send('Backend is running')
 })
 
+// ROUTES
 app.use('/api/users', userRoutes)
 
 const startServer = async () => {
