@@ -18,6 +18,9 @@ axiosClient.interceptors.request.use((config) => {
       if (parsed?.token) {
         config.headers.Authorization = `Bearer ${parsed.token}`
       }
+      if (parsed?.user?._id) {
+        config.headers['x-user-id'] = parsed.user._id // custom header for user id
+      }
     }
   } catch {
     // Ignore local storage parse issues.

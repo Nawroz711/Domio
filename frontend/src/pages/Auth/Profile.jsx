@@ -21,7 +21,7 @@ export default function Profile() {
 
   return (
     <main className="min-h-screen px-4 pb-16 pt-6 sm:px-6">
-      <section className="mx-auto w-full rounded-2xl p-5 sm:p-6">
+      <section className="mx-auto w-full rounded-xl p-5 sm:p-6 border border-gray-200">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold text-primary">My Profile</h1>
@@ -36,7 +36,7 @@ export default function Profile() {
             {/* Avatar Upload Section */}
             <div className="flex flex-col items-center sm:flex-row sm:items-start sm:gap-6">
               <div className="group relative mb-4 sm:mb-0">
-                <div className="h-28 w-28 overflow-hidden rounded-full border-4 border-gray-200">
+                <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-gray-200">
                   {avatarPreview ? (
                     <img
                       src={avatarPreview}
@@ -159,26 +159,22 @@ export default function Profile() {
             </div>
           </form>
         )}
+
       </section>
 
-
       {!isLoading && (
-        <section className="mx-auto mt-6 w-full rounded-2xl border border-red-500/30 bg-[#2a1313] p-5 sm:p-6">
-          <h2 className="text-xl font-semibold text-red-300">Danger Zone</h2>
-          <p className="mt-2 text-sm text-red-200/90">
-            Delete your account permanently. Type your full name exactly to confirm.
+        <section className="mx-auto block mt-12 w-full p-5 sm:p-6 border border-red-200 rounded-xl">
+          <h2 className="text-xl font-semibold text-red-700">Danger Zone</h2>
+          <p className="mt-2 text-sm text-red-500">
+            Delete your account permanently. Type `{user?.name}` exactly to confirm.
           </p>
 
           <div className="mt-4">
-            <label className="mb-1.5 block text-sm font-medium text-red-200" htmlFor="confirmName">
-              Type your name
-            </label>
             <input
               id="confirmName"
               value={confirmName}
               onChange={(event) => setConfirmName(event.target.value)}
-              className="w-full rounded-md border border-red-500/30 bg-[#3d2020] px-3 py-2.5 text-gray-300 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-400/20"
-              placeholder={user?.name || 'Your full name'}
+              className="w-6/12 rounded-md border border-red-500/50 px-3 py-2.5 text-red-500 outline-none focus:border-red-400 focus:ring-2 focus:ring-red-500/20"
             />
           </div>
 
@@ -186,7 +182,7 @@ export default function Profile() {
             type="button"
             onClick={handleDeleteAccount}
             disabled={isDeleting}
-            className="mt-4 rounded-md bg-red-500 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-4 rounded-md bg-red-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
           >
             {isDeleting ? 'Deleting...' : 'Delete account'}
           </button>

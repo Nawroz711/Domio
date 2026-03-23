@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import path from 'path'
 import fs from 'fs'
 import User from '../models/user.model.js'
+import { getUsers } from '../services/users.services.js'
 
 const SALT_ROUNDS = 12
 
@@ -201,3 +202,25 @@ export const deleteMyAccount = async (req, res) => {
     return res.status(500).json({ message: 'Failed to delete account', error: error.message })
   }
 }
+
+
+// User management section methods
+
+export const users = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const userId = req.get('x-user-id');
+
+    const users = await getUsers(page, limit , userId );
+
+    if (!users) {
+      return res.status(404).json({ message: 'Users not found' });
+    }
+
+    return res.status(200).json(users);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: 'Failed to fetch users', error: e.message });
+  }
+};

@@ -10,6 +10,7 @@ import PropertiesPage from '../pages/website/Properties'
 import AboutPage from '../pages/website/About'
 import ContactPage from '../pages/website/Contact'
 import Profile from '../pages/Auth/Profile'
+import Users from '../pages/Users/Users.jsx'
 
 function ProtectedRoute() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -67,23 +68,9 @@ const ShopsPage = () => (
   </div>
 )
 
-const UsersPage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
-    <p className="text-gray-600 mt-2">Manage users here</p>
-  </div>
-)
-
 const SettingsPage = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-    <p className="text-gray-600 mt-2">Manage settings here</p>
-  </div>
-)
-
-const ProfilePage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">profile</h1>
     <p className="text-gray-600 mt-2">Manage settings here</p>
   </div>
 )
@@ -172,7 +159,7 @@ export const router = createBrowserRouter([
           },
           {
             path: '/admin/users',
-            element: <UsersPage />,
+            element: <Users />,
           },
           {
             path: '/admin/settings',
