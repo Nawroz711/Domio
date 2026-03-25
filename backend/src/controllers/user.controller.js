@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import path from 'path'
 import fs from 'fs'
 import User from '../models/user.model.js'
-import { getUsers } from '../services/users.services.js'
+import { getUsers, updateUserStatus } from '../services/users.services.js'
 
 const SALT_ROUNDS = 12
 
@@ -119,7 +119,7 @@ export const getMyProfile = async (req, res) => {
 
 export const updateMyProfile = async (req, res) => {
   try {
-    const { name, phone, address } = req.body
+    const { name, phone, address, province } = req.body
 
     const user = await User.findById(req.userId)
     if (!user) {
@@ -130,6 +130,7 @@ export const updateMyProfile = async (req, res) => {
     if (name !== undefined) user.name = name.trim()
     if (phone !== undefined) user.phone = phone.trim()
     if (address !== undefined) user.address = address.trim()
+    if (province !== undefined) user.province = province.trim()
 
     await user.save()
     const safeUser = await User.findById(user._id).select('-password')
@@ -212,7 +213,15 @@ export const users = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const userId = req.get('x-user-id');
 
-    const users = await getUsers(page, limit , userId );
+    // Extract filter params
+    const filters = {
+      search: req.query.search || '',
+      province: req.query.province || '',
+      status: req.query.status || '',
+      role: req.query.role || '',
+    };
+
+    const users = await getUsers(page, limit, userId, filters);
 
     if (!users) {
       return res.status(404).json({ message: 'Users not found' });
@@ -222,5 +231,30 @@ export const users = async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: 'Failed to fetch users', error: e.message });
+  }
+};
+
+export const toggleUserStatus = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { isActive } = req.body;
+
+    if (isActive === undefined) {
+      return res.status(400).json({ message: 'isActive status is required' });
+    }
+
+    const user = await updateUserStatus(userId, isActive);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({
+      message: `User ${isActive ? 'activated' : 'deactivated'} successfully`,
+      data: user,
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: 'Failed to update user status', error: e.message });
   }
 };
