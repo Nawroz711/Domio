@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000
 app.use(
   cors({
     origin: '*',
-    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization' , 'x-user-id'],
   })
 )

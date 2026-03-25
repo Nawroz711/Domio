@@ -12,6 +12,7 @@ export function useProfile() {
     name: '',
     phone: '',
     address: '',
+    province: '',
   })
   const [confirmName, setConfirmName] = useState('')
   const [isLoading, setIsLoading] = useState(true)
@@ -32,6 +33,7 @@ export function useProfile() {
             name: profile.name || '',
             phone: profile.phone || '',
             address: profile.address || '',
+            province: profile.province || '',
           })
           // Set avatar preview if exists
           if (profile.avatar) {
@@ -51,6 +53,12 @@ export function useProfile() {
   }, [setUser])
 
   const handleChange = (event) => {
+    // Handle react-select event (has 'value' property)
+    if (event && event.value) {
+      setFormData((prev) => ({ ...prev, province: event.value }))
+      return
+    }
+    // Handle regular input events
     const { name, value } = event.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -80,6 +88,7 @@ export function useProfile() {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         address: formData.address.trim(),
+        province: formData.province.trim(),
       })
       const updated = response?.data?.data
       if (updated) {

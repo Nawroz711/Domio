@@ -1,10 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@800&display=swap");
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 @config "../tailwind.config.js";
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Outfit", sans-serif;
   background-color: #ffffff;
   color: #1E3A8A;
   margin: 0;

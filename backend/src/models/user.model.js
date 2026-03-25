@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
       required: false
     },
+    province: {
+      type: String,
+      trim: true,
+      required: false
+    },
     avatar: {
       type: String,
       trim: true,

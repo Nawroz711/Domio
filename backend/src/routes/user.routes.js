@@ -7,6 +7,7 @@ import {
   updateMyProfile,
   uploadAvatar,
   users,
+  toggleUserStatus,
 } from '../controllers/user.controller.js'
 import authMiddleware from '../middlewares/auth.middleware.js'
 import { createUserValidation, signInValidation, updateProfileValidation } from '../validations/user.validation.js'
@@ -30,5 +31,6 @@ router.delete('/profile', authMiddleware, deleteMyAccount)
 
 // User management section routes
 router.get('/' , authLimiter, users)
+router.patch('/:userId/status', authMiddleware, toggleUserStatus)
 
 export default router

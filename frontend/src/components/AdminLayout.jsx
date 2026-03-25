@@ -32,6 +32,11 @@ const menuItems = [
     icon: Building2,
     children: [
       {
+        title: 'New Property',
+        path: '/admin/properties/shops',
+        icon: Store,
+      },
+      {
         title: 'Apartments',
         path: '/admin/properties/apartments',
         icon: Building,
@@ -40,11 +45,6 @@ const menuItems = [
         title: 'Homes',
         path: '/admin/properties/homes',
         icon: Home,
-      },
-      {
-        title: 'Shops',
-        path: '/admin/properties/shops',
-        icon: Store,
       },
     ],
   },
@@ -131,15 +131,14 @@ export default function AdminLayout() {
                   <div>
                     <button
                       onClick={() => toggleMenu(item.title)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                        isParentActive(item)
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${isParentActive(item)
                           ? 'bg-primary/10 text-primary'
                           : 'text-gray-700 hover:bg-gray-100'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <item.icon className="w-5 h-5" strokeWidth={1.25} />
-                        <span className="text-sm font-light">{item.title}</span>
+                        <span className="text-sm font-medium">{item.title}</span>
                       </div>
 
                       {expandedMenus.includes(item.title) ? (
@@ -155,11 +154,10 @@ export default function AdminLayout() {
                           <li key={child.title}>
                             <Link
                               to={child.path}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                                isActive(child.path)
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${isActive(child.path)
                                   ? 'bg-primary text-white'
                                   : 'text-gray-600 hover:bg-gray-100'
-                              }`}
+                                }`}
                             >
                               <child.icon className="w-4 h-4" />
                               {child.title}
@@ -172,14 +170,13 @@ export default function AdminLayout() {
                 ) : (
                   <Link
                     to={item.path}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive(item.path)
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${isActive(item.path)
                         ? 'bg-primary text-white'
                         : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                      }`}
                   >
                     <item.icon className="w-5 h-5" strokeWidth={1.25} />
-                    <span className="text-sm font-light">{item.title}</span>
+                    <span className="text-sm font-medium">{item.title}</span>
                   </Link>
                 )}
               </li>
@@ -190,25 +187,25 @@ export default function AdminLayout() {
         {/* User Section */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
-              <Link to={'/profile'}>
-            <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-light overflow-hidden">
-                {user?.avatar ? (
-                  <img src={getAvatarUrl(user.avatar)} alt="Profile" className="h-full w-full object-cover" />
-                ) : (
-                  user?.name?.charAt(0).toUpperCase() || 'U'
-                )}
+            <Link to={'/profile'}>
+              <div className="flex items-center gap-3 cursor-pointer">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-medium overflow-hidden">
+                  {user?.avatar ? (
+                    <img src={getAvatarUrl(user.avatar)} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    user?.name?.charAt(0).toUpperCase() || 'U'
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">
+                    {user?.name || 'User'}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {user?.email || 'user@example.com'}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-light text-gray-800 truncate">
-                  {user?.name || 'User'}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {user?.email || 'user@example.com'}
-                </p>
-              </div>
-            </div>
-              </Link>
+            </Link>
 
             <button
               onClick={handleLogout}

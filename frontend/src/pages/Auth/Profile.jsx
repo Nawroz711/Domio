@@ -1,4 +1,6 @@
 import { useProfile } from '../../hooks/useProfile'
+import provinces from '../../const/provinces'
+import Select from 'react-select'
 
 export default function Profile() {
   const {
@@ -18,6 +20,7 @@ export default function Profile() {
     handleAvatarChange,
     triggerFileInput,
   } = useProfile()
+
 
   return (
     <main className="min-h-screen px-4 pb-16 pt-6 sm:px-6">
@@ -91,7 +94,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="name">
                   Full name
@@ -118,7 +121,7 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
+              <div className='w-full'>
                 <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="phone">
                   Phone
                 </label>
@@ -132,7 +135,19 @@ export default function Profile() {
                 />
               </div>
 
-              <div>
+            </div>
+            <div className="flex gap-x-5">
+
+              <div className='w-6/12'>
+                <label htmlFor="Province" className='mb-1.5 block text-sm font-medium text-gray-700'>Province</label>
+                <Select 
+                  options={provinces} 
+                  value={provinces.find(p => p.value === formData.province) || null} 
+                  onChange={handleChange} 
+                />
+              </div>
+
+              <div className='w-full'>
                 <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="address">
                   Address
                 </label>
