@@ -11,6 +11,7 @@ import AboutPage from '../pages/website/About'
 import ContactPage from '../pages/website/Contact'
 import Profile from '../pages/Auth/Profile'
 import Users from '../pages/Users/Users.jsx'
+import Create from '../pages/Properties/Create.jsx'
 
 function ProtectedRoute() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -58,13 +59,6 @@ const HomesPage = () => (
   <div className="p-8">
     <h1 className="text-2xl font-bold text-gray-800">Homes</h1>
     <p className="text-gray-600 mt-2">Manage homes here</p>
-  </div>
-)
-
-const ShopsPage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">Shops</h1>
-    <p className="text-gray-600 mt-2">Manage shops here</p>
   </div>
 )
 
@@ -154,8 +148,8 @@ export const router = createBrowserRouter([
             element: <HomesPage />,
           },
           {
-            path: '/admin/properties/shops',
-            element: <ShopsPage />,
+            path: '/admin/properties/create',
+            element: <Create />,
           },
           {
             path: '/admin/users',

@@ -5,18 +5,18 @@ import {
   Users,
   Building2,
   Home,
-  Store,
   Building,
   Settings,
   ChevronDown,
   ChevronRight,
   LogOut,
-  BellIcon
+  BellIcon,
+  PlusCircle
 } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import axiosClient from '../lib/axiosClient'
 
-const menuItems = [
+const menuItems = (userRole) => [
   {
     title: 'Dashboard',
     path: '/admin/dashboard',
@@ -31,11 +31,12 @@ const menuItems = [
     title: 'Properties',
     icon: Building2,
     children: [
-      {
+      ...(userRole === 'agent' ? [{
         title: 'New Property',
-        path: '/admin/properties/shops',
-        icon: Store,
-      },
+        path: '/admin/properties/create',
+        icon: PlusCircle,
+        isNewProperty: true,
+      }] : []),
       {
         title: 'Apartments',
         path: '/admin/properties/apartments',
@@ -69,7 +70,6 @@ export default function AdminLayout() {
   const user = useAuthStore((state) => state.user)
   const setUser = useAuthStore((state) => state.setUser)
 
-  // Fetch full profile once on mount if user exists but may have incomplete data
   useEffect(() => {
     if (user && !profileLoaded) {
       setProfileLoaded(true)
@@ -83,7 +83,6 @@ export default function AdminLayout() {
     }
   }, [user, profileLoaded, setUser])
 
-  // Helper to get full avatar URL
   const getAvatarUrl = (avatar) => {
     if (!avatar) return null
     if (avatar.startsWith('http')) return avatar
@@ -114,18 +113,15 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
-        {/* Header */}
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col flex-shrink-0">
         <div className="h-16 flex items-center px-4 border-b border-gray-200">
           <img src="/logo.webp" alt="Domio" className="w-24 rounded-lg" />
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-3">
-            {menuItems.map((item) => (
+            {menuItems(user?.role).map((item) => (
               <li key={item.title}>
                 {item.children ? (
                   <div>
@@ -149,7 +145,7 @@ export default function AdminLayout() {
                     </button>
 
                     {expandedMenus.includes(item.title) && (
-                      <ul className="ml-9 mt-1 space-y-1">
+                      <ul className="ml-4 mt-1 space-y-1">
                         {item.children.map((child) => (
                           <li key={child.title}>
                             <Link
@@ -157,9 +153,17 @@ export default function AdminLayout() {
                               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${isActive(child.path)
                                   ? 'bg-primary text-white'
                                   : 'text-gray-600 hover:bg-gray-100'
-                                }`}
+                                } ${child.isNewProperty ? 'border-2 border-dashed border-primary/50' : ''}`}
                             >
-                              <child.icon className="w-4 h-4" />
+                              {child.isNewProperty ? (
+                                <div className="relative">
+                                  <child.icon className="w-4 h-4" />
+                                  <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                                  </span>
+                                </div>
+                              ) : (
+                                <child.icon className="w-4 h-4" />
+                              )}
                               {child.title}
                             </Link>
                           </li>
@@ -184,7 +188,6 @@ export default function AdminLayout() {
           </ul>
         </nav>
 
-        {/* User Section */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
             <Link to={'/profile'}>
@@ -218,8 +221,7 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white">
+      <main className="flex-1 overflow-auto bg-white">
         <Outlet />
       </main>
     </div>

@@ -98,7 +98,7 @@ export default function Users() {
     { name: 'Email', selector: row => row.email, sortable: true },
     { name: 'Phone', selector: row => row.phone, sortable: true },
     { name: 'Province', selector: row => row.province, sortable: true },
-    { name: 'Address', selector: row => row.address, sortable: true },
+    // { name: 'Address', selector: row => row.address, sortable: true },
     {
       name: 'Status',
       cell: row => (
@@ -117,7 +117,7 @@ export default function Users() {
       allowOverflow: true,
       button: true,
     },
-    { name: 'Role', selector: row => row.role, sortable: true },
+    // { name: 'Role', selector: row => row.role, sortable: true },
   ]
 
   return (

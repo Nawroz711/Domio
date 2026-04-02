@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 import connectDB from './src/config/mongodb.js'
 import { globalLimiter } from './src/middlewares/rateLimiter.js'
 import userRoutes from './src/routes/user.routes.js'
+import propertyRoutes from './src/routes/property.routes.js'
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -36,6 +37,7 @@ app.get('/', (_req, res) => {
 
 // ROUTES
 app.use('/api/users', userRoutes)
+app.use('/api/properties', propertyRoutes)
 
 const startServer = async () => {
   try {
