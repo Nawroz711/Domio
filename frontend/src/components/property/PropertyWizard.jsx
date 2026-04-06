@@ -6,37 +6,10 @@ import { ChevronRight, ChevronLeft, Check } from 'lucide-react'
 import LocationPicker from './LocationPicker'
 import ImageUpload from './ImageUpload'
 import provinces from '../../const/provinces'
+import propertyTypes from '../../const/propertyTypes'
+import listingTypes from '../../const/listingTypes'
+import commonFeatures from '../../const/commanFeatures'
 
-// Property type options
-const propertyTypes = [
-  { value: 'house', label: 'House' },
-  { value: 'apartment', label: 'Apartment' },
-  { value: 'villa', label: 'Villa' },
-  { value: 'building', label: 'Building' },
-  { value: 'land', label: 'Land' },
-  { value: 'commercial', label: 'Commercial' },
-]
-
-const listingTypes = [
-  { value: 'sale', label: 'For Sale' },
-  { value: 'rent', label: 'For Rent' },
-  { value: 'lease', label: 'For Lease' },
-]
-
-const commonFeatures = [
-  { id: 'parking', label: 'Parking' },
-  { id: 'garden', label: 'Garden' },
-  { id: 'balcony', label: 'Balcony' },
-  { id: 'pool', label: 'Pool' },
-  { id: 'gym', label: 'Gym' },
-  { id: 'security', label: 'Security' },
-  { id: 'elevator', label: 'Elevator' },
-  { id: 'furnished', label: 'Furnished' },
-  { id: 'ac', label: 'Air Conditioning' },
-  { id: 'heating', label: 'Heating' },
-  { id: 'water_supply', label: 'Water Supply' },
-  { id: 'electricity', label: 'Electricity' },
-]
 
 const selectStyles = {
   control: (base) => ({
@@ -50,7 +23,7 @@ const selectStyles = {
 }
 
 const steps = [
-  { id: 1, title: 'Basic Info' },
+  { id: 1, title: 'Info' },
   { id: 2, title: 'Price' },
   { id: 3, title: 'Details' },
   { id: 4, title: 'Location' },
@@ -110,7 +83,7 @@ const PropertyWizard = () => {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                   currentStep > step.id
-                    ? 'bg-green-500 text-white'
+                    ? 'bg-primary text-white'
                     : currentStep === step.id
                     ? 'bg-primary text-white'
                     : 'bg-gray-200 text-gray-500'
@@ -128,7 +101,7 @@ const PropertyWizard = () => {
               {index < steps.length - 1 && (
                 <div
                   className={`w-8 sm:w-16 h-0.5 mx-2 ${
-                    currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
+                    currentStep > step.id ? 'bg-primary' : 'bg-gray-200'
                   }`}
                 />
               )}
@@ -379,7 +352,7 @@ const PropertyWizard = () => {
                   <button
                     type="button"
                     onClick={() => setShowMap(true)}
-                    className="px-4 py-2 bg-green-100 text-green-700 text-sm rounded-lg hover:bg-green-200"
+                    className="px-4 py-2 bg-gray-300 text-primary text-sm rounded-lg hover:bg-green-200"
                   >
                     Map
                   </button>
@@ -479,7 +452,7 @@ const PropertyWizard = () => {
             type="button"
             onClick={handleFinish}
             disabled={isSubmitting}
-            className="flex items-center px-6 py-2 bg-green-500 text-white rounded-lg hover:brightness-95 disabled:opacity-50"
+            className="flex items-center px-6 py-2 bg-primary text-white rounded-lg hover:brightness-95 disabled:opacity-50"
           >
             {isSubmitting ? 'Creating...' : 'Create Property'}
           </button>

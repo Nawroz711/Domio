@@ -38,12 +38,12 @@ const menuItems = (userRole) => [
         isNewProperty: true,
       }] : []),
       {
-        title: 'Apartments',
+        title: 'Apartment',
         path: '/admin/properties/apartments',
         icon: Building,
       },
       {
-        title: 'Homes',
+        title: 'House',
         path: '/admin/properties/homes',
         icon: Home,
       },
