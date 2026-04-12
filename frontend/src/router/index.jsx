@@ -12,6 +12,9 @@ import ContactPage from '../pages/website/Contact'
 import Profile from '../pages/Auth/Profile'
 import Users from '../pages/Users/Users.jsx'
 import Create from '../pages/Properties/Create.jsx'
+import Edit from '../pages/Properties/Edit.jsx'
+import View from '../pages/Properties/View.jsx'
+import Properties from '../pages/Properties/Index.jsx'
 
 function ProtectedRoute() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -41,26 +44,6 @@ const DashboardPage = () => (
   </div>
 )
 
-const RequestsPage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">Requests</h1>
-    <p className="text-gray-600 mt-2">Manage requests here</p>
-  </div>
-)
-
-const ApartmentsPage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">Apartments</h1>
-    <p className="text-gray-600 mt-2">Manage apartments here</p>
-  </div>
-)
-
-const HomesPage = () => (
-  <div className="p-8">
-    <h1 className="text-2xl font-bold text-gray-800">Homes</h1>
-    <p className="text-gray-600 mt-2">Manage homes here</p>
-  </div>
-)
 
 const SettingsPage = () => (
   <div className="p-8">
@@ -78,22 +61,22 @@ export const router = createBrowserRouter([
         path: '/',
         element: <HomePage />,
       },
-      {
-        path: '/properties',
-        element: <PropertiesPage />,
-      },
-      {
-        path: '/properties/apartments',
-        element: <PropertiesPage />,
-      },
-      {
-        path: '/properties/homes',
-        element: <PropertiesPage />,
-      },
-      {
-        path: '/properties/shops',
-        element: <PropertiesPage />,
-      },
+       {
+         path: '/properties',
+         element: <PropertiesPage />,
+       },
+       {
+         path: '/properties/apartments',
+         element: <PropertiesPage />,
+       },
+       {
+         path: '/properties/homes',
+         element: <PropertiesPage />,
+       },
+       {
+         path: '/properties/shops',
+         element: <PropertiesPage />,
+       },
       {
         path: '/about',
         element: <AboutPage />,
@@ -132,25 +115,25 @@ export const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
-            path: '/admin/requests',
-            element: <RequestsPage />,
-          },
-          {
             path: '/admin/properties',
             element: <Navigate to="/admin/properties/apartments" replace />,
           },
           {
-            path: '/admin/properties/apartments',
-            element: <ApartmentsPage />,
-          },
-          {
             path: '/admin/properties/homes',
-            element: <HomesPage />,
+            element: <Properties />,
           },
-          {
-            path: '/admin/properties/create',
-            element: <Create />,
-          },
+           {
+             path: '/admin/properties/create',
+             element: <Create />,
+           },
+           {
+             path: '/admin/properties/:propertyId',
+             element: <View />,
+           },
+           {
+             path: '/admin/properties/:propertyId/edit',
+             element: <Edit />,
+           },
           {
             path: '/admin/users',
             element: <Users />,

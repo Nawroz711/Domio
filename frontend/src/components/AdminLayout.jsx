@@ -23,11 +23,6 @@ const menuItems = (userRole) => [
     icon: LayoutDashboard,
   },
   {
-    title: 'Requests',
-    path: '/admin/requests',
-    icon: BellIcon,
-  },
-  {
     title: 'Properties',
     icon: Building2,
     children: [
@@ -38,12 +33,7 @@ const menuItems = (userRole) => [
         isNewProperty: true,
       }] : []),
       {
-        title: 'Apartment',
-        path: '/admin/properties/apartments',
-        icon: Building,
-      },
-      {
-        title: 'House',
+        title: 'Properties',
         path: '/admin/properties/homes',
         icon: Home,
       },

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import axiosClient from '../lib/axiosClient'
@@ -24,14 +24,61 @@ const initialFormData = {
   images: [],
 }
 
-export function useProperty(mode = 'create') {
+export function useProperty(mode = 'create', propertyId = null) {
   const navigate = useNavigate()
   const [formData, setFormData] = useState(initialFormData)
+  const [loading, setLoading] = useState(false)
   const [images, setImages] = useState([])
   const [previewImages, setPreviewImages] = useState([])
   const [coordinates, setCoordinates] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+
+  // Load property data for edit mode
+  useEffect(() => {
+    if (mode === 'edit' && propertyId) {
+      const loadProperty = async () => {
+        setLoading(true)
+        try {
+          const response = await axiosClient.get(`/properties/${propertyId}`)
+          const property = response.data.data || response.data
+          setFormData({
+            title: property.title || '',
+            description: property.description || '',
+            propertyType: property.propertyType || 'house',
+            listingType: property.listingType || 'sale',
+            price: property.price?.toString() || '',
+            area: property.area?.toString() || '',
+            bedrooms: property.bedrooms?.toString() || '',
+            bathrooms: property.bathrooms?.toString() || '',
+            floors: property.floors?.toString() || '1',
+            yearBuilt: property.yearBuilt?.toString() || '',
+            address: property.address || '',
+            province: property.province || '',
+            city: property.city || '',
+            district: property.district || '',
+            latitude: property.latitude?.toString() || '',
+            longitude: property.longitude?.toString() || '',
+            features: property.features || [],
+            images: property.images || [],
+          })
+          // Set preview images for existing images
+          const existingPreviews = (property.images || []).map((url) => ({
+            preview: `http://localhost:5000${url}`,
+            name: url.split('/').pop(),
+            existing: true,
+          }))
+          setPreviewImages(existingPreviews)
+        } catch (error) {
+          toast.error('Failed to load property data')
+          console.error(error)
+        } finally {
+          setLoading(false)
+        }
+      }
+      loadProperty()
+    }
+  }, [mode, propertyId])
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target
@@ -99,8 +146,9 @@ export function useProperty(mode = 'create') {
   const removeImage = useCallback((index) => {
     setPreviewImages((prev) => {
       const newImages = [...prev]
-      if (newImages[index]?.preview) {
-        URL.revokeObjectURL(newImages[index].preview)
+      const removed = newImages[index]
+      if (removed?.preview && !removed.existing) {
+        URL.revokeObjectURL(removed.preview)
       }
       newImages.splice(index, 1)
       return newImages
@@ -182,11 +230,28 @@ export function useProperty(mode = 'create') {
     setIsSubmitting(true)
 
     try {
-      // First upload images if any
+      // First upload new images if any
       let uploadedImageUrls = []
-      if (previewImages.length > 0) {
-        uploadedImageUrls = await uploadImages()
+      const newImages = previewImages.filter(img => !img.existing)
+      if (newImages.length > 0) {
+        const files = newImages.map(img => img.file).filter(Boolean)
+        if (files.length > 0) {
+          const formDataUpload = new FormData()
+          files.forEach((file) => {
+            formDataUpload.append('images', file)
+          })
+          const response = await axiosClient.post('/properties/upload', formDataUpload, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          uploadedImageUrls = response?.data?.data?.images || []
+        }
       }
+
+      // Combine existing and new images
+      const existingImages = previewImages.filter(img => img.existing).map(img => img.preview)
+      const allImages = [...existingImages, ...uploadedImageUrls]
 
       // Build payload with proper types
       const payload = {
@@ -207,16 +272,25 @@ export function useProperty(mode = 'create') {
         latitude: formData.latitude ? parseFloat(formData.latitude) : undefined,
         longitude: formData.longitude ? parseFloat(formData.longitude) : undefined,
         features: formData.features || [],
-        images: uploadedImageUrls,
+        images: allImages,
       }
 
       console.log('Submitting payload:', payload)
-      const response = await axiosClient.post('/properties', payload)
 
-      if (response.status === 201) {
-        toast.success('Property created successfully!')
-        navigate('/admin/properties')
+      let response
+      if (mode === 'edit' && propertyId) {
+        response = await axiosClient.put(`/properties/${propertyId}`, payload)
+        if (response.status === 200) {
+          toast.success('Property updated successfully!')
+        }
+      } else {
+        response = await axiosClient.post('/properties', payload)
+        if (response.status === 201) {
+          toast.success('Property created successfully!')
+        }
       }
+
+      navigate('/admin/properties/homes')
     } catch (error) {
       const errorData = error?.response?.data
       if (errorData?.errors && Array.isArray(errorData.errors)) {
@@ -224,12 +298,12 @@ export function useProperty(mode = 'create') {
           toast.error(err.message)
         })
       } else {
-        toast.error(errorData?.message || 'Failed to create property. Please try again.')
+        toast.error(errorData?.message || `Failed to ${mode === 'edit' ? 'update' : 'create'} property. Please try again.`)
       }
     } finally {
       setIsSubmitting(false)
     }
-  }, [formData, previewImages, uploadImages, validate, navigate])
+  }, [formData, previewImages, validate, navigate, mode, propertyId])
 
   const resetForm = useCallback(() => {
     setFormData(initialFormData)
@@ -250,6 +324,7 @@ export function useProperty(mode = 'create') {
     coordinates,
     isSubmitting,
     isUploading,
+    loading,
     handleChange,
     handleFeatureChange,
     handleCoordinatesChange,

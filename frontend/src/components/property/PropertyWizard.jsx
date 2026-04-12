@@ -31,7 +31,7 @@ const steps = [
   { id: 6, title: 'Images' },
 ]
 
-const PropertyWizard = () => {
+const PropertyWizard = ({ mode = 'create', propertyId = null }) => {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const [showMap, setShowMap] = useState(false)
@@ -42,6 +42,7 @@ const PropertyWizard = () => {
     previewImages,
     isSubmitting,
     isUploading,
+    loading,
     handleChange,
     handleFeatureChange,
     handleCoordinatesChange,
@@ -50,7 +51,7 @@ const PropertyWizard = () => {
     removeImage,
     handleSubmit,
     setFormData,
-  } = useProperty()
+  } = useProperty(mode, propertyId)
 
   const onDrop = (acceptedFiles) => {
     const newImages = acceptedFiles.slice(0, 10 - previewImages.length)
@@ -71,6 +72,14 @@ const PropertyWizard = () => {
 
   const handleFinish = async (e) => {
     await handleSubmit(e)
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="text-center">Loading property data...</div>
+      </div>
+    )
   }
 
   return (
@@ -451,10 +460,10 @@ const PropertyWizard = () => {
           <button
             type="button"
             onClick={handleFinish}
-            disabled={isSubmitting}
+            disabled={isSubmitting || loading}
             className="flex items-center px-6 py-2 bg-primary text-white rounded-lg hover:brightness-95 disabled:opacity-50"
           >
-            {isSubmitting ? 'Creating...' : 'Create Property'}
+            {isSubmitting ? (mode === 'edit' ? 'Updating...' : 'Creating...') : (mode === 'edit' ? 'Update Property' : 'Create Property')}
           </button>
         )}
       </div>
